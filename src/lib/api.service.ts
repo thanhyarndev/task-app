@@ -43,7 +43,18 @@ export const deleteProject = async (projectId: string): Promise<void> => {
   const response = await fetch(`/api/projects/${projectId}`, {
     method: 'DELETE',
   });
-  if (!response.ok) throw new Error('Failed to delete project');
+  console.log('Delete response:', {
+    status: response.status,
+    ok: response.ok,
+    statusText: response.statusText
+  });
+  
+  if (response.status === 404) {
+    throw new Error('Project not found');
+  }
+  if (!response.ok) {
+    throw new Error('Failed to delete project');
+  }
 };
 
 // Tasks

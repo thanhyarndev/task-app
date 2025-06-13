@@ -59,16 +59,11 @@ export async function DELETE(request: Request, { params }: Params) {
     await connectDB();
     const project = await Project.findOneAndDelete({ id: params.id });
     if (!project) {
-      return NextResponse.json(
-        { error: 'Project not found' },
-        { status: 404 }
-      );
+      return new NextResponse(null, { status: 404 });
     }
-    return NextResponse.json({}, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    console.error('Delete project error:', error);
+    return new NextResponse(null, { status: 500 });
   }
 } 

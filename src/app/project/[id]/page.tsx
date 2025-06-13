@@ -11,6 +11,7 @@ import { getTasksByProject, addTask, updateTask, reorderTasks, updateTaskFull, d
 import { Calendar, ChevronLeft, Clock, Filter, LogIn, Search, Settings, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/auth-context";
 
 const STATUS_LABELS = {
@@ -105,35 +106,57 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
-        <div className="bg-white rounded-2xl shadow-2xl px-10 py-8 flex flex-col items-center animate-fade-in">
-          <div className="mb-6">
-            <span className="inline-block w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 animate-spin-slow flex items-center justify-center">
-              <Loader2 className="w-12 h-12 text-white drop-shadow-lg" />
-            </span>
-          </div>
-          <div className="text-xl font-semibold text-gray-700 flex items-center">
-            Loading...
-            <span className="ml-1 loading-dots">...</span>
+      <main className="min-h-screen bg-gray-100">
+        {/* Project Header Skeleton */}
+        <div className="bg-white border-b">
+          <div className="container mx-auto py-4">
+            <div className="flex justify-between items-center mb-4">
+              <Skeleton className="h-9 w-20" />
+              <Skeleton className="h-9 w-32" />
+            </div>
+
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-64" />
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-5 w-40" />
+                </div>
+              </div>
+              <Skeleton className="h-9 w-24" />
+            </div>
+
+            {/* Toolbar Skeleton */}
+            <div className="flex gap-4 items-center">
+              <Skeleton className="h-10 w-full max-w-md" />
+              <Skeleton className="h-10 w-10" />
+            </div>
           </div>
         </div>
-        <style jsx global>{`
-          @keyframes spin-slow { 100% { transform: rotate(360deg); } }
-          .animate-spin-slow { animation: spin-slow 1.5s linear infinite; }
-          @keyframes fade-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-          .animate-fade-in { animation: fade-in 0.5s ease; }
-          .loading-dots::after {
-            content: '';
-            animation: dots 1.2s steps(3, end) infinite;
-          }
-          @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
-          }
-        `}</style>
-      </div>
+
+        {/* Board Skeleton */}
+        <div className="container mx-auto py-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-lg p-4 space-y-4">
+                <Skeleton className="h-6 w-32" />
+                <div className="space-y-3">
+                  {[1, 2, 3].map((j) => (
+                    <div key={j} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <div className="flex gap-2">
+                        <Skeleton className="h-6 w-6" />
+                        <Skeleton className="h-6 w-6" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
     );
   }
 
