@@ -11,6 +11,7 @@ import { getAllProjects, getTasksByProject, updateProject, deleteProject } from 
 import { useAuth } from "@/contexts/auth-context";
 import { Input } from "@/components/ui/input";
 import { DashboardOverview } from "@/components/DashboardOverview";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FILTERS = [
   { label: "All", value: "all" },
@@ -24,11 +25,13 @@ export default function Home() {
   const [projectTasks, setProjectTasks] = useState<Record<string, Task[]>>({});
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const fetchProjectsAndTasks = async () => {
+      setLoading(true);
       const projectsFromApi = await getAllProjects();
       setProjects(projectsFromApi);
       // Fetch tasks for each project
@@ -40,6 +43,7 @@ export default function Home() {
         })
       );
       setProjectTasks(tasksMap);
+      setLoading(false);
     };
     fetchProjectsAndTasks();
   }, []);
@@ -87,6 +91,56 @@ export default function Home() {
     if (filter === "ontrack") return isOnTrack;
     return true;
   });
+
+  if (loading) {
+    return (
+      <main className="container mx-auto py-8">
+        {/* Header Skeleton */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+          <Skeleton className="h-10 w-48" />
+          <div className="flex flex-1 gap-2 items-center justify-end">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-40" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+
+        {/* Projects Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-lg p-6 space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-8 w-8" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Dashboard Overview Skeleton */}
+        <div className="mt-10">
+          <Skeleton className="h-8 w-48 mb-4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-lg p-4">
+                <Skeleton className="h-6 w-24 mb-2" />
+                <Skeleton className="h-8 w-16" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="container mx-auto py-8">
