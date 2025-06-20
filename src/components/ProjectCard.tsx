@@ -22,6 +22,7 @@ import {
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
 import {
   Select,
   SelectContent,
@@ -123,6 +124,11 @@ export function ProjectCard({ project, tasks = [], onClick, onUpdate, onDelete }
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-2">
+          {project.description && (
+            <div className="text-gray-600 text-xs line-clamp-2">
+              {project.description}
+            </div>
+          )}
           <div>🗓 Deadline: {formatDate(project.deadline)}</div>
           <div className="flex items-center gap-2 text-xs">
             <div className="flex-1">
@@ -156,6 +162,18 @@ export function ProjectCard({ project, tasks = [], onClick, onUpdate, onDelete }
                 onChange={(e) =>
                   setEditedProject({ ...editedProject, title: e.target.value })
                 }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={editedProject.description || ''}
+                onChange={(e) =>
+                  setEditedProject({ ...editedProject, description: e.target.value })
+                }
+                placeholder="Describe your project..."
+                rows={3}
               />
             </div>
             <div className="space-y-2">

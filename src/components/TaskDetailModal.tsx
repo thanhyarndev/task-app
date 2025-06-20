@@ -16,8 +16,17 @@ import {
   ListTodo,
   Tag,
   X,
+  Trash2,
+  Plus,
 } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { TASK_LABELS, getLabelColor, getLabelName } from "@/lib/constants";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface Props {
   task: Task;
@@ -31,21 +40,36 @@ export function TaskDetailModal({ task, open, onClose, onSave }: Props) {
   const [description, setDescription] = useState(task.description || "");
   const [deadline, setDeadline] = useState(task.deadline || "");
   const [subtasks, setSubtasks] = useState(task.subtasks || []);
+  const [labels, setLabels] = useState(task.labels || []);
   const [newSubtask, setNewSubtask] = useState("");
 
   const handleAddSubtask = () => {
     if (!newSubtask.trim()) return;
     setSubtasks((prev) => [
       ...prev,
-      { id: uuidv4(), title: newSubtask.trim(), done: false },
+      { id: uuidv4(), title: newSubtask.trim(), completed: false },
     ]);
     setNewSubtask("");
   };
 
   const handleToggleSubtask = (id: string) => {
     setSubtasks((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, done: !s.done } : s))
+      prev.map((s) => (s.id === id ? { ...s, completed: !s.completed } : s))
     );
+  };
+
+  const handleDeleteSubtask = (id: string) => {
+    setSubtasks((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  const handleAddLabel = (labelValue: string) => {
+    if (!labels.includes(labelValue)) {
+      setLabels((prev) => [...prev, labelValue]);
+    }
+  };
+
+  const handleRemoveLabel = (labelValue: string) => {
+    setLabels((prev) => prev.filter((l) => l !== labelValue));
   };
 
   const handleSave = () => {
@@ -57,15 +81,19 @@ export function TaskDetailModal({ task, open, onClose, onSave }: Props) {
       description,
       deadline,
       subtasks,
+      labels,
     };
     onSave(updatedTask);
     onClose();
   };
 
   // Tính % subtasks đã hoàn thành
-  const completedSubtasks = subtasks.filter((s) => s.done).length;
+  const completedSubtasks = subtasks.filter((s) => s.completed).length;
   const totalSubtasks = subtasks.length;
   const progress = totalSubtasks ? (completedSubtasks / totalSubtasks) * 100 : 0;
+
+  // Lọc labels chưa được thêm
+  const availableLabels = TASK_LABELS.filter(label => !labels.includes(label.value));
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -131,19 +159,25 @@ export function TaskDetailModal({ task, open, onClose, onSave }: Props) {
                 {subtasks.map((sub) => (
                   <div
                     key={sub.id}
-                    className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded"
+                    className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded group"
                   >
                     <Checkbox
-                      checked={sub.done}
+                      checked={sub.completed}
                       onCheckedChange={() => handleToggleSubtask(sub.id)}
                     />
                     <span
                       className={
-                        sub.done ? "line-through text-gray-400" : "text-gray-700"
+                        sub.completed ? "line-through text-gray-400" : "text-gray-700"
                       }
                     >
                       {sub.title}
                     </span>
+                    <button
+                      onClick={() => handleDeleteSubtask(sub.id)}
+                      className="ml-auto opacity-0 group-hover:opacity-100 hover:bg-red-100 p-1 rounded transition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -171,22 +205,55 @@ export function TaskDetailModal({ task, open, onClose, onSave }: Props) {
               </Label>
               <Input
                 type="date"
-                value={deadline?.slice(0, 10)}
-                onChange={(e) => setDeadline(e.target.value)}
+                value={deadline ? new Date(deadline).toISOString().split('T')[0] : ''}
+                onChange={(e) => setDeadline(e.target.value ? new Date(e.target.value).toISOString() : '')}
               />
             </div>
 
-            {/* Labels - sẽ thêm sau */}
+            {/* Labels */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Tag className="w-4 h-4" />
                 Labels
               </Label>
-              <div className="flex flex-wrap gap-1">
-                <Badge variant="outline">Feature</Badge>
-                <Badge variant="outline">UI</Badge>
-                <Badge variant="outline">+ Add Label</Badge>
+              
+              {/* Current Labels */}
+              <div className="flex flex-wrap gap-1 mb-2">
+                {labels.map((label) => (
+                  <Badge
+                    key={label}
+                    className={`${getLabelColor(label)} text-white cursor-pointer hover:opacity-80`}
+                    onClick={() => handleRemoveLabel(label)}
+                  >
+                    {getLabelName(label)}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ))}
               </div>
+
+              {/* Add Labels Dropdown */}
+              {availableLabels.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Label
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48">
+                    {availableLabels.map((label) => (
+                      <DropdownMenuItem
+                        key={label.value}
+                        onClick={() => handleAddLabel(label.value)}
+                        className="flex items-center gap-2"
+                      >
+                        <div className={`w-3 h-3 rounded-full ${label.color}`} />
+                        {label.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </div>

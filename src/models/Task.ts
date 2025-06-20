@@ -18,6 +18,7 @@ const taskSchema = new mongoose.Schema({
   },
   deadline: { type: Date },
   subtasks: [subtaskSchema],
+  labels: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

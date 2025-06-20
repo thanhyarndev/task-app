@@ -67,8 +67,9 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    return NextResponse.json({}, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
+    console.error('Delete task error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }

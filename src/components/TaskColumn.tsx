@@ -53,7 +53,9 @@ export function TaskColumn({
       title: newTitle.trim(),
       status,
       subtasks: [],
+      labels: [],
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     onAddTask(newTask);
@@ -102,7 +104,7 @@ export function TaskColumn({
               snapshot.isDraggingOver ? "bg-gray-100" : ""
             }`}
           >
-            <div className="space-y-2">
+            <div className="space-y-3">
               {uniqueTasks.map((task, index) => (
                 <Draggable 
                   key={task.id} 

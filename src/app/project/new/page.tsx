@@ -7,12 +7,14 @@ import { addProject } from "@/lib/api.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 export default function NewProjectPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [priority, setPriority] = useState("medium");
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function NewProjectPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !deadline) {
-      toast.error("Please fill in all fields");
+      toast.error("Please fill in all required fields");
       return;
     }
     setLoading(true);
@@ -28,6 +30,7 @@ export default function NewProjectPage() {
       const newProject = {
         id: uuidv4(),
         title,
+        description,
         deadline,
         priority,
       };
@@ -47,7 +50,7 @@ export default function NewProjectPage() {
         <h1 className="text-2xl font-bold text-center mb-6">Create New Project</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Project Name</Label>
+            <Label htmlFor="title">Project Name *</Label>
             <Input
               id="title"
               value={title}
@@ -57,7 +60,17 @@ export default function NewProjectPage() {
             />
           </div>
           <div>
-            <Label htmlFor="deadline">Deadline</Label>
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe your project..."
+              rows={4}
+            />
+          </div>
+          <div>
+            <Label htmlFor="deadline">Deadline *</Label>
             <Input
               id="deadline"
               type="date"

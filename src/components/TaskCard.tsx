@@ -9,6 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Badge } from "./ui/badge";
+import { getLabelColor, getLabelName } from "@/lib/constants";
 
 interface Props {
   task: Task;
@@ -40,16 +42,16 @@ export function TaskCard({ task, onClick, onDelete }: Props) {
       className={`p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer group bg-white ${isOverdue ? 'border-red-500 border-2' : ''}`}
       onClick={onClick}
     >
-      <div className="space-y-2">
+      <div className="space-y-2 min-h-0">
         {/* Header with title and menu */}
         <div className="flex justify-between items-start gap-2">
-          <h3 className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex items-center gap-1">
-            {task.title}
-            {isOverdue && <AlertTriangle className="w-4 h-4 text-red-500" title="Task is overdue" />}
+          <h3 className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex items-center gap-1 flex-1 min-w-0">
+            <span className="truncate">{task.title}</span>
+            {isOverdue && <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" title="Task is overdue" />}
           </h3>
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <button className="opacity-0 group-hover:opacity-100 hover:bg-gray-100 p-1 rounded transition">
+              <button className="opacity-0 group-hover:opacity-100 hover:bg-gray-100 p-1 rounded transition flex-shrink-0">
                 <MoreHorizontal className="w-4 h-4 text-gray-500" />
               </button>
             </DropdownMenuTrigger>
@@ -62,16 +64,35 @@ export function TaskCard({ task, onClick, onDelete }: Props) {
           </DropdownMenu>
         </div>
 
+        {/* Labels */}
+        {task.labels && task.labels.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {task.labels.slice(0, 3).map((label) => (
+              <Badge
+                key={label}
+                className={`${getLabelColor(label)} text-white text-xs px-1.5 py-0.5`}
+              >
+                {getLabelName(label)}
+              </Badge>
+            ))}
+            {task.labels.length > 3 && (
+              <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                +{task.labels.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
+
         {/* Description */}
         {task.description && (
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <AlignLeft className="w-3.5 h-3.5" />
-            <p className="line-clamp-2">{task.description}</p>
+          <div className="flex items-start gap-1 text-xs text-gray-500">
+            <AlignLeft className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+            <p className="text-xs leading-relaxed">{task.description}</p>
           </div>
         )}
 
         {/* Footer with metadata */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
           <div className="flex items-center gap-3">
             {/* Subtasks counter */}
             {task.subtasks && task.subtasks.length > 0 && (

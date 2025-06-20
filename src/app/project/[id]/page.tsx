@@ -118,6 +118,7 @@ export default function ProjectDetailPage() {
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-2">
                 <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-96" />
                 <div className="flex items-center gap-4">
                   <Skeleton className="h-5 w-40" />
                   <Skeleton className="h-5 w-40" />
@@ -211,6 +212,9 @@ export default function ProjectDetailPage() {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-2xl font-bold mb-1">{project.title}</h1>
+              {project.description && (
+                <p className="text-gray-600 mb-2 max-w-2xl">{project.description}</p>
+              )}
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />

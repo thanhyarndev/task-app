@@ -1,17 +1,20 @@
+export type TaskStatus = 'todo' | 'in-progress' | 'done';
+
 export interface Subtask {
   id: string;
   title: string;
-  done: boolean;
+  completed: boolean;
 }
 
 export interface Task {
   id: string;
   projectId: string;
   title: string;
-  subDescription?: string;
   description?: string;
+  status: TaskStatus;
   deadline?: string;
-  status: 'todo' | 'in-progress' | 'done'; // ✅ THÊM DÒNG NÀY
-  subtasks: { id: string; title: string; done: boolean }[];
+  subtasks: Subtask[];
+  labels: string[];
   createdAt: string;
+  updatedAt: string;
 }
